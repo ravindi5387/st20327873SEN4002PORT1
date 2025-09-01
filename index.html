@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Budget Management System - LKR</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #272222;
+        background-color: #f5f7f9;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header styles */
+      header {
+        background: linear-gradient(135deg, #2f557b, #19528b);
+        color: white;
+        padding: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .logo i {
+        margin-right: 10px;
+        font-size: 1.8rem;
+      }
+
+      .currency-badge {
+        background-color: #1c7a56;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 8px;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+      }
+
+      nav li {
+        margin-left: 1.5rem;
+      }
+
+      .nav-link {
+        color: white;
+        text-decoration: none;
+        transition: opacity 0.3s;
+      }
+
+      .nav-link:hover {
+        opacity: 0.8;
+      }
+
+      .nav-link.active {
+        border-bottom: 2px solid #384180;
+      }
+
+      /* Auth container styles */
+      .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 2rem 0;
+      }
+
+      .auth-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(18, 18, 18, 0.1);
+        width: 100%;
+        max-width: 450px;
+      }
+
+      .form-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+        font-size: 1.8rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2c3e50;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-control:focus {
+        border-color: #4a6580;
+        outline: none;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #6f7af3, #514ced);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: opacity 0.3s;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .btn-block {
+        width: 100%;
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #8e9ba7);
+      }
+
+      .form-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+
+      .form-footer a {
+        color: #4a6580;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .form-footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Dashboard selection styles */
+      .dashboard-selection {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+      }
+
+      .dashboard-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .dashboard-buttons button {
+        flex: 1;
+      }
+
+      /* Notification styles */
+      .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .notification {
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.3s ease;
+      }
+
+      .notification.success {
+        background-color: #2ecc71;
+      }
+
+      .notification.error {
+        background-color: #e74c3c;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Footer styles */
+      footer {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+        margin-top: 2rem;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .social-links {
+        margin: 1rem 0;
+      }
+
+      .social-links a {
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 10px;
+        transition: opacity 0.3s;
+      }
+
+      .social-links a:hover {
+        opacity: 0.8;
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        nav ul {
+          margin-top: 1rem;
+          justify-content: center;
+        }
+
+        nav li {
+          margin: 0 0.75rem;
+        }
+
+        .auth-form {
+          padding: 1.5rem;
+        }
+
+        .dashboard-buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="notification-container" id="notification-container"></div>
+
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="index.html" class="nav-link active">Home</a>
+            </li>
+            <li>
+              <a href="features.html" class="nav-link">Features</a>
+            </li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li>
+              <a href="contact.html" class="nav-link">Contact</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <!-- Home Page (Login) -->
+        <div class="page active" id="home-page">
+          <!-- Login Form -->
+          <div class="auth-container" id="login-section">
+            <div class="auth-form">
+              <h2 class="form-title">Login to Your Account</h2>
+              <form id="login-form">
+                <div class="form-group">
+                  <label for="login-email">Email Address or Username</label>
+                  <input
+                    type="text"
+                    id="login-email"
+                    class="form-control"
+                    placeholder="Enter your email or username"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="login-password">Password</label>
+                  <input
+                    type="password"
+                    id="login-password"
+                    class="form-control"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="user-role">Login as</label>
+                  <select id="user-role" class="form-control">
+                    <option value="admin">Admin</option>
+                    <option value="owner">Family Owner</option>
+                    <option value="member">Family Member</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-block">Login</button>
+              </form>
+
+              <!-- Dashboard Selection (shown after owner login) -->
+              <div
+                class="dashboard-selection"
+                id="dashboard-selection"
+                style="display: none"
+              >
+                <h3>Select Dashboard</h3>
+                <div class="dashboard-buttons">
+                  <button class="btn" id="go-to-owner-dashboard">
+                    Owner Dashboard
+                  </button>
+                  <button class="btn btn-secondary" id="go-to-member-dashboard">
+                    Member Dashboard
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-footer">
+                <p>
+                  Don't have an account?
+                  <a href="#" id="show-register">Register</a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registration Form -->
+          <div
+            class="auth-container"
+            id="register-section"
+            style="display: none"
+          >
+            <div class="auth-form">
+              <h2 class="form-title">Create an Account</h2>
+              <form id="register-form">
+                <div class="form-group">
+                  <label for="register-name">Full Name</label>
+                  <input
+                    type="text"
+                    id="register-name"
+                    class="form-control"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="register-email">Email Address</label>
+                  <input
+                    type="email"
+                    id="register-email"
+                    class="form-control"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="register-password">Password</label>
+                  <input
+                    type="password"
+                    id="register-password"
+                    class="form-control"
+                    placeholder="Create a password"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="register-confirm-password"
+                    >Confirm Password</label
+                  >
+                  <input
+                    type="password"
+                    id="register-confirm-password"
+                    class="form-control"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="register-role">Register as</label>
+                  <select id="register-role" class="form-control">
+                    <option value="owner">Family Owner</option>
+                    <option value="member">Family Member</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-block">Register</button>
+              </form>
+              <div class="form-footer">
+                <p>
+                  Already have an account? <a href="#" id="show-login">Login</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container footer-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <p>Manage your family finances with ease and precision</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <p>&copy; 2025 Family Budget Manager. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Constants
+      const ADMIN_EMAIL = "admin@gmail.com";
+      const ADMIN_PASSWORD = "admin123";
+
+      // Family Owner credentials
+      const OWNER_USERNAME = "owner";
+      const OWNER_PASSWORD = "owner123";
+      const OWNER_EMAIL = "owner@gmail.com";
+
+      // Demo user database (in a real app, this would be on the server)
+      const users = [
+        {
+          email: OWNER_EMAIL,
+          username: OWNER_USERNAME,
+          password: OWNER_PASSWORD,
+          name: "Family Owner",
+          role: "owner",
+        },
+        {
+          email: "member@gmail.com",
+          password: "member123",
+          name: "Family Member",
+          role: "member",
+        },
+      ];
+
+      // Notification function
+      function showNotification(message, type) {
+        const notificationContainer = document.getElementById(
+          "notification-container"
+        );
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        // Remove notification after 5 seconds
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const showRegisterLink = document.getElementById("show-register");
+        const showLoginLink = document.getElementById("show-login");
+        const loginSection = document.getElementById("login-section");
+        const registerSection = document.getElementById("register-section");
+        const dashboardSelection = document.getElementById(
+          "dashboard-selection"
+        );
+        const goToOwnerDashboardBtn = document.getElementById(
+          "go-to-owner-dashboard"
+        );
+        const goToMemberDashboardBtn = document.getElementById(
+          "go-to-member-dashboard"
+        );
+
+        let currentUser = null;
+
+        // Show Register Form
+        showRegisterLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          loginSection.style.display = "none";
+          registerSection.style.display = "flex";
+          dashboardSelection.style.display = "none";
+        });
+
+        // Show Login Form
+        showLoginLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          registerSection.style.display = "none";
+          loginSection.style.display = "flex";
+          dashboardSelection.style.display = "none";
+        });
+
+        // Redirect to owner dashboard
+        goToOwnerDashboardBtn.addEventListener("click", function () {
+          showNotification("Redirecting to Owner Dashboard...", "success");
+          setTimeout(() => {
+            window.location.href = "owner-dashboard.html";
+          }, 1500);
+        });
+
+        // Redirect to member dashboard
+        goToMemberDashboardBtn.addEventListener("click", function () {
+          showNotification("Redirecting to Member Dashboard...", "success");
+          setTimeout(() => {
+            window.location.href = "member-dashboard.html";
+          }, 1500);
+        });
+
+        // Login Form Submission
+        document
+          .getElementById("login-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const selectedRole = document.getElementById("user-role").value;
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+
+            // Validate admin credentials
+            if (selectedRole === "admin") {
+              if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                showNotification(
+                  "Login successful! Redirecting to admin dashboard...",
+                  "success"
+                );
+                setTimeout(() => {
+                  window.location.href = "admin-dashboard.html";
+                }, 1500);
+              } else {
+                showNotification(
+                  "Invalid admin credentials. Please try again.",
+                  "error"
+                );
+                return;
+              }
+            }
+            // Validate family owner credentials (using both email and username)
+            else if (selectedRole === "owner") {
+              if (
+                (email === OWNER_EMAIL || email === OWNER_USERNAME) &&
+                password === OWNER_PASSWORD
+              ) {
+                showNotification("Owner login successful!", "success");
+                currentUser = {
+                  email: OWNER_EMAIL,
+                  username: OWNER_USERNAME,
+                  name: "Family Owner",
+                  role: "owner",
+                };
+
+                // Show dashboard selection for owner
+                dashboardSelection.style.display = "block";
+              } else {
+                showNotification(
+                  "Invalid owner credentials. Please try again.",
+                  "error"
+                );
+                return;
+              }
+            }
+            // Validate family member credentials
+            else if (selectedRole === "member") {
+              // Find user in the demo database
+              const user = users.find(
+                (u) =>
+                  (u.email === email || u.username === email) &&
+                  u.password === password &&
+                  u.role === "member"
+              );
+
+              if (!user) {
+                // Check if owner is trying to access member dashboard
+                if (
+                  (email === OWNER_EMAIL || email === OWNER_USERNAME) &&
+                  password === OWNER_PASSWORD
+                ) {
+                  showNotification(
+                    "Owner accessing member dashboard...",
+                    "success"
+                  );
+                  setTimeout(() => {
+                    window.location.href = "member-dashboard.html";
+                  }, 1500);
+                } else {
+                  showNotification(
+                    "Invalid email/username or password. Please try again.",
+                    "error"
+                  );
+                }
+                return;
+              }
+
+              showNotification(
+                "Login successful! Redirecting to member dashboard...",
+                "success"
+              );
+              setTimeout(() => {
+                window.location.href = "member-dashboard.html";
+              }, 1500);
+            }
+          });
+
+        // Register Form Submission
+        document
+          .getElementById("register-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const name = document.getElementById("register-name").value;
+            const email = document.getElementById("register-email").value;
+            const password = document.getElementById("register-password").value;
+            const confirmPassword = document.getElementById(
+              "register-confirm-password"
+            ).value;
+            const role = document.getElementById("register-role").value;
+
+            // Basic validation
+            if (password !== confirmPassword) {
+              showNotification("Passwords do not match.", "error");
+              return;
+            }
+
+            // Check if email already exists
+            if (users.some((user) => user.email === email)) {
+              showNotification(
+                "Email already registered. Please login.",
+                "error"
+              );
+              registerSection.style.display = "none";
+              loginSection.style.display = "flex";
+              return;
+            }
+
+            // In a real application, you would send this data to a server
+            // For demo purposes, we'll just show a success message
+            showNotification(
+              "Registration successful! Please login with your credentials.",
+              "success"
+            );
+
+            // Add the new user to the users array for demo purposes
+            users.push({
+              email: email,
+              password: password,
+              name: name,
+              role: role,
+            });
+
+            registerSection.style.display = "none";
+            loginSection.style.display = "flex";
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Family Budget Management System</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header styles */
+      header {
+        background-color: #232956;
+        color: white;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .logo i {
+        margin-right: 10px;
+        font-size: 1.8rem;
+      }
+
+      .currency-badge {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 10px;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+      }
+
+      nav ul li {
+        margin-left: 20px;
+      }
+
+      .nav-link {
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Button styles */
+      .btn {
+        background-color: #4361ee;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #3a56d4;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+
+      .btn-warning {
+        background-color: #f59e0b;
+      }
+
+      .btn-warning:hover {
+        background-color: #d97706;
+      }
+
+      .btn-danger {
+        background-color: #ef4444;
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .btn-block {
+        display: block;
+        width: 100%;
+      }
+
+      /* Main content styles */
+      main {
+        padding: 30px 0;
+      }
+
+      .dashboard-header {
+        margin-bottom: 30px;
+      }
+
+      .welcome-text {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+
+      .user-role {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .role-admin {
+        background-color: #8b5cf6;
+        color: white;
+      }
+
+      .role-owner {
+        background-color: #10b981;
+        color: white;
+      }
+
+      .role-member {
+        background-color: #3b82f6;
+        color: white;
+      }
+
+      /* Summary cards */
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .summary-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+
+      .summary-card h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        color: #6b7280;
+      }
+
+      .summary-card h3 i {
+        margin-right: 8px;
+        color: #4361ee;
+      }
+
+      .summary-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #4361ee;
+        margin-bottom: 5px;
+      }
+
+      .summary-card p {
+        color: #656581;
+        font-size: 0.9rem;
+      }
+
+      /* Dashboard content */
+      .dashboard-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background-color: rgb(245, 245, 245);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .card-title i {
+        margin-right: 10px;
+        color: #020719;
+      }
+
+      .card p {
+        color: #283142;
+        margin-bottom: 15px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4361ee;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+      }
+
+      /* Transaction section */
+      .transaction-section {
+        margin-bottom: 40px;
+      }
+
+      .transaction-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .transaction-section h2 i {
+        margin-right: 10px;
+        color: #4361ee;
+      }
+
+      /* Form styles */
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      /* Table styles */
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .data-table th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .data-table tr:hover {
+        background-color: #f9fafb;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h3 {
+        font-size: 1.3rem;
+      }
+
+      .close {
+        color: #6b7280;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: #374151;
+      }
+
+      .modal-content > p {
+        padding: 20px;
+        margin: 0;
+      }
+
+      /* Footer styles */
+      footer {
+        background-color: rgb(73, 73, 103);
+        padding: 30px 0;
+        text-align: center;
+        border-top: 1px solid #edebeb;
+        margin-top: 40px;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-content .logo {
+        margin-bottom: 15px;
+      }
+
+      .footer-content p {
+        color: #e1e5ee;
+        margin-bottom: 15px;
+      }
+
+      .social-links {
+        margin-bottom: 15px;
+      }
+
+      .social-links a {
+        color: #e0e2e6;
+        font-size: 1.2rem;
+        margin: 0 10px;
+        transition: color 0.3s;
+      }
+
+      .social-links a:hover {
+        color: #4361ee;
+      }
+
+      /* Notification styles */
+      .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+      }
+
+      .notification {
+        padding: 12px 20px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease-out;
+      }
+
+      .notification.success {
+        background-color: #10b981;
+      }
+
+      .notification.error {
+        background-color: #ef4444;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Edit modal form styles */
+      .edit-form-group {
+        margin-bottom: 15px;
+      }
+
+      .edit-form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .edit-form-group input,
+      .edit-form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="notification-container" id="notification-container"></div>
+
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="index.html" class="nav-link">Home</a>
+            </li>
+            <li>
+              <a href="features.html" class="nav-link">Features</a>
+            </li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li>
+              <a href="contact.html" class="nav-link">Contact</a>
+            </li>
+            <li>
+              <button class="btn" id="logout-btn-admin">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <!-- Admin Dashboard -->
+        <div class="dashboard active" id="admin-dashboard">
+          <div class="dashboard-header">
+            <h2 class="welcome-text">
+              Welcome, Admin User
+              <span class="user-role role-admin">Administrator</span>
+            </h2>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="summary-cards">
+            <div class="summary-card">
+              <h3><i class="fas fa-users"></i> Total Users</h3>
+              <div class="summary-value" id="total-users">5</div>
+              <p>Registered in system</p>
+            </div>
+            <div class="summary-card">
+              <h3><i class="fas fa-home"></i> Families</h3>
+              <div class="summary-value" id="total-families">1</div>
+              <p>Active family groups</p>
+            </div>
+            <div class="summary-card">
+              <h3>
+                <i class="fas fa-money-bill-wave"></i> System Transactions
+              </h3>
+              <div class="summary-value" id="total-transactions">10</div>
+              <p>All transactions</p>
+            </div>
+          </div>
+
+          <div class="dashboard-content">
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-chart-line"></i> System Overview
+              </h3>
+              <p>Financial overview across all families in the system.</p>
+              <div class="stats">
+                <div class="stat-item">
+                  <div class="stat-value">Rs 100 000</div>
+                  <div class="stat-label">Total Income</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">Rs 75 000</div>
+                  <div class="stat-label">Total Expenses</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-exclamation-triangle"></i> System Alerts
+              </h3>
+              <p>Recent issues that need attention.</p>
+              <div class="stats">
+                <div class="stat-item">
+                  <div class="stat-value">3</div>
+                  <div class="stat-label">Pending Issues</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">12</div>
+                  <div class="stat-label">This Week</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-chart-pie"></i> Expense Distribution
+              </h3>
+              <p>View spending patterns across all families.</p>
+              <div class="chart-container">
+                <canvas id="adminChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Management Section -->
+          <div class="transaction-section">
+            <h2 class="card-title">
+              <i class="fas fa-user-cog"></i> User Management
+            </h2>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-plus-circle"></i> Create New User
+              </h3>
+              <form id="admin-create-user-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="admin-user-name">Full Name</label>
+                    <input
+                      type="text"
+                      id="admin-user-name"
+                      class="form-control"
+                      placeholder="Enter full name"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="admin-user-email">Email Address</label>
+                    <input
+                      type="email"
+                      id="admin-user-email"
+                      class="form-control"
+                      placeholder="Enter email"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="admin-user-role">User Role</label>
+                    <select id="admin-user-role" class="form-control" required>
+                      <option value="owner">Family Owner</option>
+                      <option value="member">Family Member</option>
+                      <option value="admin">Administrator</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="admin-user-password">Password</label>
+                    <input
+                      type="password"
+                      id="admin-user-password"
+                      class="form-control"
+                      placeholder="Set password"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="admin-user-family">Assign to Family</label>
+                    <select id="admin-user-family" class="form-control">
+                      <option value="">Select Family</option>
+                      <option value="1">Doe Family</option>
+                      <option value="2">Smith Family</option>
+                      <option value="3">Johnson Family</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="align-self: flex-end">
+                    <button type="submit" class="btn btn-block">
+                      Create User
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title"><i class="fas fa-users"></i> All Users</h3>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Family</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Ravindi sandali</td>
+                      <td>ravindi@gmail.com</td>
+                      <td><span class="user-role role-owner">Owner</span></td>
+                      <td>Doe Family</td>
+                      <td><span style="color: green">Active</span></td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-user-btn"
+                          data-id="1"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-user-btn"
+                          data-id="1"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Sandali perera</td>
+                      <td>sandali@.com</td>
+                      <td><span class="user-role role-member">Member</span></td>
+                      <td>Doe Family</td>
+                      <td><span style="color: green">Active</span></td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-user-btn"
+                          data-id="2"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-user-btn"
+                          data-id="2"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Admin User</td>
+                      <td>admin@familybudget.lk</td>
+                      <td><span class="user-role role-admin">Admin</span></td>
+                      <td>System</td>
+                      <td><span style="color: green">Active</span></td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-user-btn"
+                          data-id="3"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-user-btn"
+                          data-id="3"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Settings Section -->
+          <div class="transaction-section">
+            <h2 class="card-title">
+              <i class="fas fa-cog"></i> System Settings
+            </h2>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-money-bill-wave"></i> Budget Categories
+              </h3>
+              <p>Manage the budget categories available to all families.</p>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="new-category-name"
+                    class="form-control"
+                    placeholder="New category name"
+                  />
+                </div>
+                <div class="form-group">
+                  <select id="new-category-type" class="form-control">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-block" id="add-category-btn">
+                    Add Category
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Category Name</th>
+                      <th>Type</th>
+                      <th>Usage Count</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="categories-table-body">
+                    <tr data-id="1">
+                      <td>Food & Groceries</td>
+                      <td>Expense</td>
+                      <td>4</td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-category-btn"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-category-btn"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                    <tr data-id="2">
+                      <td>Utilities</td>
+                      <td>Expense</td>
+                      <td>4</td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-category-btn"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-category-btn"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                    <tr data-id="3">
+                      <td>Salary</td>
+                      <td>Income</td>
+                      <td>2</td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-warning edit-category-btn"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-sm btn-danger delete-category-btn"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-chart-bar"></i> System Reports
+              </h3>
+              <p>Generate and view system-wide financial reports.</p>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="report-type">Report Type</label>
+                  <select id="report-type" class="form-control">
+                    <option value="financial">Financial Summary</option>
+                    <option value="user">User Activity</option>
+                    <option value="family">Family Performance</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="report-period">Time Period</label>
+                  <select id="report-period" class="form-control">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+                <div class="form-group" style="align-self: flex-end">
+                  <button class="btn btn-block" id="generate-report-btn">
+                    Generate Report
+                  </button>
+                </div>
+              </div>
+
+              <!-- Report Display Area -->
+              <div
+                class="card"
+                id="report-display"
+                style="display: none; margin-top: 20px"
+              >
+                <h3 class="card-title">
+                  <i class="fas fa-file-alt"></i> Available Balance Report
+                </h3>
+                <div class="chart-container">
+                  <canvas id="balanceReportChart"></canvas>
+                </div>
+                <div id="report-summary" style="margin-top: 20px">
+                  <h4>Financial Summary</h4>
+                  <div class="stats">
+                    <div class="stat-item">
+                      <div class="stat-value">Rs 100 000</div>
+                      <div class="stat-label">Total Income</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">Rs 75 000</div>
+                      <div class="stat-label">Total Expenses</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">Rs 25 000</div>
+                      <div class="stat-label">Net Balance</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">1</div>
+                      <div class="stat-label">Active Families</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Confirm Deletion</h3>
+          <span class="close">&times;</span>
+        </div>
+        <p id="delete-modal-message">
+          Are you sure you want to delete this item?
+        </p>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+          "
+        >
+          <button class="btn" id="cancel-delete">Cancel</button>
+          <button class="btn btn-danger" id="confirm-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div class="modal" id="edit-category-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit Category</h3>
+          <span class="close">&times;</span>
+        </div>
+        <div style="padding: 20px">
+          <div class="edit-form-group">
+            <label for="edit-category-name">Category Name</label>
+            <input type="text" id="edit-category-name" class="form-control" />
+          </div>
+          <div class="edit-form-group">
+            <label for="edit-category-type">Category Type</label>
+            <select id="edit-category-type" class="form-control">
+              <option value="Expense">Expense</option>
+              <option value="Income">Income</option>
+            </select>
+          </div>
+        </div>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 0 20px 20px;
+          "
+        >
+          <button class="btn" id="cancel-edit-category">Cancel</button>
+          <button class="btn btn-warning" id="save-category-changes">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="edit-user-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit User</h3>
+          <span class="close">&times;</span>
+        </div>
+        <div style="padding: 20px">
+          <div class="edit-form-group">
+            <label for="edit-user-name">Full Name</label>
+            <input type="text" id="edit-user-name" class="form-control" />
+          </div>
+          <div class="edit-form-group">
+            <label for="edit-user-email">Email Address</label>
+            <input type="email" id="edit-user-email" class="form-control" />
+          </div>
+          <div class="edit-form-group">
+            <label for="edit-user-role">User Role</label>
+            <select id="edit-user-role" class="form-control">
+              <option value="owner">Family Owner</option>
+              <option value="member">Family Member</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="edit-form-group">
+            <label for="edit-user-family">Assign to Family</label>
+            <select id="edit-user-family" class="form-control">
+              <option value="">Select Family</option>
+              <option value="1">Doe Family</option>
+              <option value="2">Smith Family</option>
+              <option value="3">Johnson Family</option>
+            </select>
+          </div>
+          <div class="edit-form-group">
+            <label for="edit-user-status">Status</label>
+            <select id="edit-user-status" class="form-control">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 0 20px 20px;
+          "
+        >
+          <button class="btn" id="cancel-edit-user">Cancel</button>
+          <button class="btn btn-warning" id="save-user-changes">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container footer-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <p>Manage your family finances with ease and precision</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <p>&copy; 2025 Family Budget Manager. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Notification function
+      function showNotification(message, type) {
+        const notificationContainer = document.getElementById(
+          "notification-container"
+        );
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        notificationContainer.appendChild(notification);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+      }
+
+      // Modal functionality
+      const deleteModal = document.getElementById("delete-modal");
+      const editCategoryModal = document.getElementById("edit-category-modal");
+      const editUserModal = document.getElementById("edit-user-modal");
+      let currentDeleteId = null;
+      let currentDeleteType = null;
+      let currentEditId = null;
+
+      // Open modal functions
+      function openDeleteModal(id, type, name) {
+        currentDeleteId = id;
+        currentDeleteType = type;
+        const message = `Are you sure you want to delete ${name}? This action cannot be undone.`;
+        document.getElementById("delete-modal-message").textContent = message;
+        deleteModal.style.display = "block";
+      }
+
+      function openEditCategoryModal(id, name, type) {
+        currentEditId = id;
+        document.getElementById("edit-category-name").value = name;
+        document.getElementById("edit-category-type").value = type;
+        editCategoryModal.style.display = "block";
+      }
+
+      function openEditUserModal(id, name, email, role, family, status) {
+        currentEditId = id;
+        document.getElementById("edit-user-name").value = name;
+        document.getElementById("edit-user-email").value = email;
+        document.getElementById("edit-user-role").value = role;
+        document.getElementById("edit-user-family").value =
+          family.toLowerCase();
+        document.getElementById("edit-user-status").value =
+          status.toLowerCase();
+        editUserModal.style.display = "block";
+      }
+
+      // Close modal functions
+      function closeModals() {
+        deleteModal.style.display = "none";
+        editCategoryModal.style.display = "none";
+        editUserModal.style.display = "none";
+      }
+
+      // Event listeners for closing modals
+      document.querySelectorAll(".close").forEach((closeBtn) => {
+        closeBtn.addEventListener("click", closeModals);
+      });
+
+      document
+        .getElementById("cancel-delete")
+        .addEventListener("click", closeModals);
+      document
+        .getElementById("cancel-edit-category")
+        .addEventListener("click", closeModals);
+      document
+        .getElementById("cancel-edit-user")
+        .addEventListener("click", closeModals);
+
+      // Confirm delete action
+      document
+        .getElementById("confirm-delete")
+        .addEventListener("click", function () {
+          if (currentDeleteId && currentDeleteType) {
+            if (currentDeleteType === "user") {
+              // Delete user logic
+              const userRow = document
+                .querySelector(`.delete-user-btn[data-id="${currentDeleteId}"]`)
+                .closest("tr");
+              userRow.remove();
+              showNotification("User deleted successfully", "success");
+            } else if (currentDeleteType === "category") {
+              // Delete category logic
+              const categoryRow = document.querySelector(
+                `tr[data-id="${currentDeleteId}"]`
+              );
+              categoryRow.remove();
+              showNotification("Category deleted successfully", "success");
+            }
+            closeModals();
+          }
+        });
+
+      // Save category changes
+      document
+        .getElementById("save-category-changes")
+        .addEventListener("click", function () {
+          const newName = document.getElementById("edit-category-name").value;
+          const newType = document.getElementById("edit-category-type").value;
+
+          if (newName && newType) {
+            const categoryRow = document.querySelector(
+              `tr[data-id="${currentEditId}"]`
+            );
+            categoryRow.cells[0].textContent = newName;
+            categoryRow.cells[1].textContent = newType;
+            showNotification("Category updated successfully", "success");
+            closeModals();
+          } else {
+            showNotification("Please fill all fields", "error");
+          }
+        });
+
+      // Save user changes
+      document
+        .getElementById("save-user-changes")
+        .addEventListener("click", function () {
+          const newName = document.getElementById("edit-user-name").value;
+          const newEmail = document.getElementById("edit-user-email").value;
+          const newRole = document.getElementById("edit-user-role").value;
+          const newFamily = document.getElementById("edit-user-family").value;
+          const newStatus = document.getElementById("edit-user-status").value;
+
+          if (newName && newEmail && newRole) {
+            const userRow = document
+              .querySelector(`.edit-user-btn[data-id="${currentEditId}"]`)
+              .closest("tr");
+            userRow.cells[0].textContent = newName;
+            userRow.cells[1].textContent = newEmail;
+
+            // Update role badge
+            const roleSpan = userRow.cells[2].querySelector("span");
+            roleSpan.className = `user-role role-${newRole}`;
+            roleSpan.textContent =
+              newRole.charAt(0).toUpperCase() + newRole.slice(1);
+
+            // Update family
+            userRow.cells[3].textContent = newFamily
+              ? newFamily === "1"
+                ? "Doe Family"
+                : newFamily === "2"
+                ? "Smith Family"
+                : "Johnson Family"
+              : "System";
+
+            // Update status
+            userRow.cells[4].innerHTML = `<span style="color: ${
+              newStatus === "active" ? "green" : "red"
+            }">${
+              newStatus.charAt(0).toUpperCase() + newStatus.slice(1)
+            }</span>`;
+
+            showNotification("User updated successfully", "success");
+            closeModals();
+          } else {
+            showNotification("Please fill all required fields", "error");
+          }
+        });
+
+      // Add event listeners to all edit and delete buttons
+      document.addEventListener("DOMContentLoaded", function () {
+        // User buttons
+        document.querySelectorAll(".edit-user-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const id = this.getAttribute("data-id");
+            const row = this.closest("tr");
+            const name = row.cells[0].textContent;
+            const email = row.cells[1].textContent;
+            const role = row.cells[2]
+              .querySelector("span")
+              .textContent.toLowerCase();
+            const family = row.cells[3].textContent;
+            const status = row.cells[4]
+              .querySelector("span")
+              .textContent.toLowerCase();
+
+            openEditUserModal(id, name, email, role, family, status);
+          });
+        });
+
+        document.querySelectorAll(".delete-user-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const id = this.getAttribute("data-id");
+            const row = this.closest("tr");
+            const name = row.cells[0].textContent;
+
+            openDeleteModal(id, "user", `user "${name}"`);
+          });
+        });
+
+        // Category buttons
+        document.querySelectorAll(".edit-category-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const row = this.closest("tr");
+            const id = row.getAttribute("data-id");
+            const name = row.cells[0].textContent;
+            const type = row.cells[1].textContent;
+
+            openEditCategoryModal(id, name, type);
+          });
+        });
+
+        document.querySelectorAll(".delete-category-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const row = this.closest("tr");
+            const id = row.getAttribute("data-id");
+            const name = row.cells[0].textContent;
+
+            openDeleteModal(id, "category", `category "${name}"`);
+          });
+        });
+
+        // Add category button
+        document
+          .getElementById("add-category-btn")
+          .addEventListener("click", function () {
+            const nameInput = document.getElementById("new-category-name");
+            const typeSelect = document.getElementById("new-category-type");
+            const name = nameInput.value.trim();
+            const type = typeSelect.value;
+
+            if (name) {
+              const tableBody = document.getElementById(
+                "categories-table-body"
+              );
+              const newId =
+                Number(tableBody.lastElementChild.getAttribute("data-id")) + 1;
+
+              const newRow = document.createElement("tr");
+              newRow.setAttribute("data-id", newId);
+              newRow.innerHTML = `
+              <td>${name}</td>
+              <td>${type.charAt(0).toUpperCase() + type.slice(1)}</td>
+              <td>0</td>
+              <td>
+                <button class="btn btn-sm btn-warning edit-category-btn">Edit</button>
+                <button class="btn btn-sm btn-danger delete-category-btn">Delete</button>
+              </td>
+            `;
+
+              tableBody.appendChild(newRow);
+
+              // Add event listeners to the new buttons
+              newRow
+                .querySelector(".edit-category-btn")
+                .addEventListener("click", function () {
+                  const row = this.closest("tr");
+                  const id = row.getAttribute("data-id");
+                  const name = row.cells[0].textContent;
+                  const type = row.cells[1].textContent;
+
+                  openEditCategoryModal(id, name, type);
+                });
+
+              newRow
+                .querySelector(".delete-category-btn")
+                .addEventListener("click", function () {
+                  const row = this.closest("tr");
+                  const id = row.getAttribute("data-id");
+                  const name = row.cells[0].textContent;
+
+                  openDeleteModal(id, "category", `category "${name}"`);
+                });
+
+              nameInput.value = "";
+              showNotification("Category added successfully", "success");
+            } else {
+              showNotification("Please enter a category name", "error");
+            }
+          });
+
+        // Close modal when clicking outside
+        window.addEventListener("click", function (event) {
+          if (event.target === deleteModal) {
+            closeModals();
+          }
+          if (event.target === editCategoryModal) {
+            closeModals();
+          }
+          if (event.target === editUserModal) {
+            closeModals();
+          }
+        });
+      });
+
+      // Admin Dashboard specific JavaScript
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Admin Chart
+        function initAdminChart() {
+          const ctx = document.getElementById("adminChart").getContext("2d");
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: [
+                "Food",
+                "Utilities",
+                "Rent",
+                "Transport",
+                "Healthcare",
+                "Entertainment",
+              ],
+              datasets: [
+                {
+                  label: "Average Spending (LKR)",
+                  data: [12500, 8500, 25000, 7500, 4500, 6000],
+                  backgroundColor: "rgba(67, 97, 238, 0.7)",
+                  borderColor: "rgba(67, 97, 238, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function (value) {
+                      return "Rs " + value.toLocaleString("en-LK");
+                    },
+                  },
+                },
+              },
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
+                title: {
+                  display: true,
+                  text: "Average Family Expenses by Category",
+                },
+              },
+            },
+          });
+        }
+
+        // Generate Report Button
+        document
+          .getElementById("generate-report-btn")
+          .addEventListener("click", function () {
+            document.getElementById("report-display").style.display = "block";
+            generateBalanceReport();
+            showNotification(
+              "Balance report generated successfully!",
+              "success"
+            );
+          });
+
+        // Generate Balance Report
+        function generateBalanceReport() {
+          const ctx = document
+            .getElementById("balanceReportChart")
+            .getContext("2d");
+
+          // Sample data for the report
+          const data = {
+            labels: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+            datasets: [
+              {
+                label: "Income",
+                data: [
+                  120000, 125000, 130000, 128000, 135000, 140000, 145000,
+                  150000, 148000, 155000, 160000, 165000,
+                ],
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                fill: true,
+                tension: 0.4,
+              },
+              {
+                label: "Expenses",
+                data: [
+                  95000, 98000, 105000, 102000, 110000, 115000, 120000, 125000,
+                  122000, 128000, 132000, 135000,
+                ],
+                borderColor: "#ef4444",
+                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                fill: true,
+                tension: 0.4,
+              },
+              {
+                label: "Balance",
+                data: [
+                  25000, 27000, 25000, 26000, 25000, 25000, 25000, 25000, 26000,
+                  27000, 28000, 30000,
+                ],
+                borderColor: "#4361ee",
+                backgroundColor: "rgba(67, 97, 238, 0.1)",
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          };
+
+          new Chart(ctx, {
+            type: "line",
+            data: data,
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: "Monthly Income, Expenses and Balance Trend",
+                },
+              },
+              interaction: {
+                intersect: false,
+                mode: "index",
+              },
+              scales: {
+                y: {
+                  type: "linear",
+                  display: true,
+                  position: "left",
+                  title: {
+                    display: true,
+                    text: "Amount (LKR)",
+                  },
+                  ticks: {
+                    callback: function (value) {
+                      return "Rs " + value.toLocaleString("en-LK");
+                    },
+                  },
+                },
+                x: {
+                  display: true,
+                  title: {
+                    display: true,
+                    text: "Month",
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        // Admin Create User Form Submission
+        document
+          .getElementById("admin-create-user-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const userName = document.getElementById("admin-user-name").value;
+            showNotification(
+              `User "${userName}" created successfully!`,
+              "success"
+            );
+            this.reset();
+          });
+
+        // Logout functionality
+        document
+          .getElementById("logout-btn-admin")
+          .addEventListener("click", function () {
+            window.location.href = "index.html";
+          });
+
+        // Initialize the chart
+        initAdminChart();
+      });
+    </script>
+  </body>
+</html>

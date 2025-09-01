@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Owner Dashboard - Family Budget Management System</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary: #3b3c9f;
+        --secondary: #245eaf;
+        --success: #482fd5;
+        --danger: #c20707;
+        --warning: #fca311;
+        --info: #4895ef;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --family-color: #7209b7;
+        --admin-color: #d90429;
+        --member-color: #2ec4b6;
+        --background: #f8f9fa;
+        --card-bg: #ffffff;
+        --text: #333333;
+        --border: #dee2e6;
+        --income-color: #10b981;
+        --expense-color: #ef4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* Header Styles */
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1rem 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .logo i {
+        color: var(--warning);
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 20px;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+      }
+
+      nav a:hover,
+      nav a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Main Content Styles */
+      main {
+        flex: 1;
+        padding: 2rem 0;
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .welcome-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .user-role {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
+      .role-owner {
+        background-color: var(--family-color);
+        color: white;
+      }
+
+      .btn {
+        display: inline-block;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background-color: var(--secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-block {
+        display: block;
+        width: 100%;
+      }
+
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+      }
+
+      .btn-success {
+        background-color: var(--success);
+      }
+
+      .btn-income {
+        background-color: var(--income-color);
+      }
+
+      .btn-expense {
+        background-color: var(--expense-color);
+      }
+
+      .btn-warning {
+        background-color: var(--warning);
+      }
+
+      /* Summary Cards */
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .summary-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .summary-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .summary-card.income {
+        border-top: 4px solid var(--income-color);
+      }
+
+      .summary-card.expense {
+        border-top: 4px solid var(--expense-color);
+      }
+
+      .summary-card.balance {
+        border-top: 4px solid var(--primary);
+      }
+
+      .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+      }
+
+      .dashboard-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 250px;
+        margin-top: 1rem;
+      }
+
+      .notification-list {
+        margin-top: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .notification-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        transition: background-color 0.2s ease;
+      }
+
+      .notification-item:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+      }
+
+      .notification-item:last-child {
+        border-bottom: none;
+      }
+
+      .notification-content h4 {
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .notification-content p {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+      }
+
+      .notification-content small {
+        color: #6c757d;
+      }
+
+      /* Transaction Styles */
+      .transaction-section {
+        margin-top: 2rem;
+      }
+
+      .transaction-form {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.2rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+
+      .transaction-list {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+      }
+
+      .transaction-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 15px;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+      }
+
+      .transaction-item:last-child {
+        border-bottom: none;
+      }
+
+      .transaction-header {
+        font-weight: 600;
+        background-color: rgba(67, 97, 238, 0.1);
+        border-radius: 5px;
+      }
+
+      .income {
+        color: var(--income-color);
+        font-weight: 600;
+      }
+
+      .expense {
+        color: var(--expense-color);
+        font-weight: 600;
+      }
+
+      .currency-badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 5px;
+      }
+
+      /* Family Members Section */
+      .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 1rem;
+      }
+
+      .member-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+        position: relative;
+      }
+
+      .member-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .member-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 3px solid var(--primary);
+      }
+
+      .member-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .member-role {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .member-details {
+        text-align: left;
+        margin-top: 1rem;
+      }
+
+      .member-detail {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .remove-member-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .remove-member-btn:hover {
+        background: #a00;
+      }
+
+      /* New Styles for Recent Transactions */
+      .member-transactions {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border);
+      }
+
+      .member-transactions h4 {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        color: var(--primary);
+      }
+
+      .member-transactions .transaction-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 10px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .member-transactions .transaction-item:last-child {
+        border-bottom: none;
+      }
+
+      /* Report Section Styles */
+      .report-section {
+        margin-top: 2rem;
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .report-filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background-color: rgba(67, 97, 238, 0.05);
+        border-radius: 8px;
+      }
+
+      .report-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .report-charts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 2rem;
+      }
+
+      .report-table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+      }
+
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .report-table th,
+      .report-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .report-table th {
+        background-color: rgba(67, 97, 238, 0.1);
+        font-weight: 600;
+      }
+
+      .report-table tr:hover {
+        background-color: rgba(67, 97, 238, 0.03);
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background-color: var(--card-bg);
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        animation: modalFadeIn 0.3s ease;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .modal-header h3 {
+        margin: 0;
+        color: var(--primary);
+        font-size: 1.3rem;
+      }
+
+      .close {
+        color: #aaa;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: var(--dark);
+      }
+
+      /* Notification Styles */
+      .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+      }
+
+      .notification {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        animation: slideInRight 0.3s ease;
+      }
+
+      .notification.success {
+        background-color: var(--income-color);
+      }
+
+      .notification.error {
+        background-color: var(--danger);
+      }
+
+      .notification.info {
+        background-color: var(--info);
+      }
+
+      .notification.warning {
+        background-color: var(--warning);
+      }
+
+      .notification .close-notification {
+        cursor: pointer;
+        margin-left: 1rem;
+      }
+
+      /* Footer Styles */
+      footer {
+        background: var(--dark);
+        color: white;
+        padding: 2rem 0;
+        text-align: center;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 1rem;
+        animation: fadeIn 1s ease;
+      }
+
+      .social-links a {
+        color: white;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .social-links a:hover {
+        color: var(--warning);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        nav ul {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .dashboard-content {
+          grid-template-columns: 1fr;
+        }
+
+        .transaction-item {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .members-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .member-transactions .transaction-item {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .report-charts {
+          grid-template-columns: 1fr;
+        }
+
+        .report-actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="notification-container" id="notification-container"></div>
+
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="index.html" class="nav-link">Home</a>
+            </li>
+            <li>
+              <a href="features.html" class="nav-link">Features</a>
+            </li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li>
+              <a href="contact.html" class="nav-link">Contact</a>
+            </li>
+            <li>
+              <button class="btn" id="logout-btn-owner">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <!-- Family Owner Dashboard -->
+        <div class="dashboard active" id="owner-dashboard">
+          <div class="dashboard-header">
+            <h2 class="welcome-text">
+              Welcome, John Doe
+              <span class="user-role role-owner">Family Owner</span>
+            </h2>
+            <button class="btn" id="generate-report-btn">
+              <i class="fas fa-chart-line"></i> Generate Report
+            </button>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="summary-cards">
+            <div class="summary-card income">
+              <h3><i class="fas fa-money-bill-wave"></i> Total Income</h3>
+              <div class="summary-value" id="total-income">Rs 100,000.00</div>
+              <p>This month</p>
+            </div>
+            <div class="summary-card expense">
+              <h3><i class="fas fa-share-square"></i> Total Expenses</h3>
+              <div class="summary-value" id="total-expenses">Rs 75,000.00</div>
+              <p>This month</p>
+            </div>
+            <div class="summary-card balance">
+              <h3><i class="fas fa-piggy-bank"></i> Balance</h3>
+              <div class="summary-value" id="balance">Rs 25,000.00</div>
+              <p>Remaining budget</p>
+            </div>
+          </div>
+
+          <div class="dashboard-content">
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-chart-pie"></i> Expense Overview
+              </h3>
+              <p>Breakdown of your family expenses by category.</p>
+              <div class="chart-container">
+                <canvas id="ownerChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-bell"></i> Recent Notifications
+              </h3>
+              <p>Important updates and alerts for your family.</p>
+              <div class="notification-list">
+                <div class="notification-item">
+                  <div class="notification-content">
+                    <h4>Budget Limit Exceeded</h4>
+                    <p>Entertainment budget has exceeded by Rs 2,500.00</p>
+                    <small>Received: Jan 22, 2025</small>
+                  </div>
+                </div>
+                <div class="notification-item">
+                  <div class="notification-content">
+                    <h4>New Member Added</h4>
+                    <p>Sarah has been added to your family group</p>
+                    <small>Received: Jan 15, 2025</small>
+                  </div>
+                </div>
+                <div class="notification-item">
+                  <div class="notification-content">
+                    <h4>Bill Payment Reminder</h4>
+                    <p>Electricity bill of Rs 8,750.00 is due in 3 days</p>
+                    <small>Received: Jan 10, 2025</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Family Members with Recent Transactions -->
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-users"></i> Family Members & Recent
+                Transactions
+              </h3>
+              <p>
+                Manage your family members and view their recent transactions.
+              </p>
+              <div class="members-grid" id="family-members-container">
+                <!-- Family members will be dynamically added here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction Management Section -->
+          <div class="transaction-section">
+            <h2 class="card-title">
+              <i class="fas fa-money-bill-wave"></i> Transaction Management
+            </h2>
+
+            <div class="transaction-form">
+              <h3>Add New Transaction</h3>
+              <form id="owner-transaction-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="owner-transaction-type">Type</label>
+                    <select
+                      id="owner-transaction-type"
+                      class="form-control"
+                      required
+                    >
+                      <option value="income">Income</option>
+                      <option value="expense">Expense</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="owner-transaction-amount">Amount (LKR)</label>
+                    <input
+                      type="number"
+                      id="owner-transaction-amount"
+                      class="form-control"
+                      placeholder="Enter amount in rupees"
+                      required
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="owner-transaction-category">Category</label>
+                    <select
+                      id="owner-transaction-category"
+                      class="form-control"
+                      required
+                    >
+                      <option value="salary">Salary</option>
+                      <option value="business">Business Income</option>
+                      <option value="investment">Investment</option>
+                      <option value="rental">Rental Income</option>
+                      <option value="other_income">Other Income</option>
+                      <option value="food">Food & Groceries</option>
+                      <option value="utilities">Utilities</option>
+                      <option value="rent">Rent/Mortgage</option>
+                      <option value="transport">Transportation</option>
+                      <option value="healthcare">Healthcare</option>
+                      <option value="education">Education</option>
+                      <option value="entertainment">Entertainment</option>
+                      <option value="other_expense">Other Expenses</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="owner-transaction-date">Date</label>
+                    <input
+                      type="date"
+                      id="owner-transaction-date"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="owner-transaction-description"
+                      >Description</label
+                    >
+                    <input
+                      type="text"
+                      id="owner-transaction-description"
+                      class="form-control"
+                      placeholder="Enter description"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="owner-transaction-member">Family Member</label>
+                    <select id="owner-transaction-member" class="form-control">
+                      <option value="all">All Family</option>
+                      <!-- Family members will be dynamically added here -->
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-block">
+                  Add Transaction
+                </button>
+              </form>
+            </div>
+
+            <div class="transaction-list">
+              <h3>Recent Family Transactions</h3>
+              <div class="transaction-item transaction-header">
+                <div>Description</div>
+                <div>Category</div>
+                <div>Member</div>
+                <div>Date</div>
+                <div>Amount (LKR)</div>
+                <div>Action</div>
+              </div>
+              <div id="owner-transaction-list">
+                <!-- Transactions will be dynamically added here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Management Section -->
+          <div class="transaction-section">
+            <h2 class="card-title">
+              <i class="fas fa-user-plus"></i> Manage Family Members
+            </h2>
+
+            <div class="card">
+              <h3 class="card-title">
+                <i class="fas fa-plus-circle"></i> Add New Member
+              </h3>
+              <form id="add-member-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="new-member-name">Full Name</label>
+                    <input
+                      type="text"
+                      id="new-member-name"
+                      class="form-control"
+                      placeholder="Enter full name"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="new-member-email">Email Address</label>
+                    <input
+                      type="email"
+                      id="new-member-email"
+                      class="form-control"
+                      placeholder="Enter email"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="new-member-role">Role</label>
+                    <select id="new-member-role" class="form-control" required>
+                      <option value="member">Family Member</option>
+                      <option value="owner">Family Owner</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="new-member-budget">Monthly Budget (LKR)</label>
+                    <input
+                      type="number"
+                      id="new-member-budget"
+                      class="form-control"
+                      placeholder="Enter monthly budget"
+                      required
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  <div class="form-group" style="align-self: flex-end">
+                    <button type="submit" class="btn btn-block">
+                      Add Member
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Report Generation Section -->
+          <div class="report-section" id="report-section" style="display: none">
+            <h2 class="card-title">
+              <i class="fas fa-chart-line"></i> Financial Reports
+            </h2>
+
+            <div class="report-filters">
+              <div class="form-group">
+                <label for="report-period">Report Period</label>
+                <select id="report-period" class="form-control">
+                  <option value="this_month">This Month</option>
+                  <option value="last_month">Last Month</option>
+                  <option value="last_3_months">Last 3 Months</option>
+                  <option value="this_year">This Year</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+
+              <div
+                class="form-group"
+                id="custom-date-range"
+                style="display: none"
+              >
+                <label for="start-date">Start Date</label>
+                <input type="date" id="start-date" class="form-control" />
+              </div>
+
+              <div
+                class="form-group"
+                id="custom-date-range-end"
+                style="display: none"
+              >
+                <label for="end-date">End Date</label>
+                <input type="date" id="end-date" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label for="report-type">Report Type</label>
+                <select id="report-type" class="form-control">
+                  <option value="summary">Summary Report</option>
+                  <option value="detailed">Detailed Transactions</option>
+                  <option value="category">Category Breakdown</option>
+                  <option value="member">Member Spending</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="report-actions">
+              <button class="btn btn-success" id="generate-report">
+                <i class="fas fa-sync"></i> Generate Report
+              </button>
+              <button class="btn btn-income" id="export-pdf">
+                <i class="fas fa-file-pdf"></i> Export as PDF
+              </button>
+              <button class="btn" id="export-csv">
+                <i class="fas fa-file-csv"></i> Export as CSV
+              </button>
+            </div>
+
+            <div class="report-summary">
+              <h3>Financial Summary</h3>
+              <div class="summary-cards">
+                <div class="summary-card income">
+                  <h3><i class="fas fa-money-bill-wave"></i> Total Income</h3>
+                  <div class="summary-value" id="report-total-income">
+                    Rs 100 000.00
+                  </div>
+                  <p id="report-income-period">Period</p>
+                </div>
+                <div class="summary-card expense">
+                  <h3><i class="fas fa-share-square"></i> Total Expenses</h3>
+                  <div class="summary-value" id="report-total-expenses">
+                    Rs 75 000.00
+                  </div>
+                  <p id="report-expenses-period">Period</p>
+                </div>
+                <div class="summary-card balance">
+                  <h3><i class="fas fa-piggy-bank"></i> Net Balance</h3>
+                  <div class="summary-value" id="report-net-balance">
+                    Rs 25 000.00
+                  </div>
+                  <p id="report-balance-period">Period</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="report-charts">
+              <div class="card">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-pie"></i> Expense Distribution
+                </h3>
+                <div class="chart-container">
+                  <canvas id="reportExpenseChart"></canvas>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-bar"></i> Income vs Expenses
+                </h3>
+                <div class="chart-container">
+                  <canvas id="reportComparisonChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="report-table-container">
+              <h3>Detailed Transactions</h3>
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Member</th>
+                    <th>Type</th>
+                    <th>Amount (LKR)</th>
+                  </tr>
+                </thead>
+                <tbody id="report-transactions-table">
+                  <tr>
+                    <td colspan="6">
+                      Select "Detailed Transactions" report type to view
+                      transaction details.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Confirm Deletion</h3>
+          <span class="close">&times;</span>
+        </div>
+        <p id="delete-modal-message">
+          Are you sure you want to delete this transaction?
+        </p>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+          "
+        >
+          <button class="btn" id="cancel-delete">Cancel</button>
+          <button class="btn btn-danger" id="confirm-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container footer-content">
+        <div class="logo">
+          <i class="fas fa-coins"></i>
+          <span
+            >Family Budget Manager <span class="currency-badge">LKR</span></span
+          >
+        </div>
+        <p>Manage your family finances with ease and precision</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <p>&copy; 2025 Family Budget Manager. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // DOM Elements
+      const ownerDashboard = document.getElementById("owner-dashboard");
+      const logoutBtnOwner = document.getElementById("logout-btn-owner");
+      const ownerTransactionForm = document.getElementById(
+        "owner-transaction-form"
+      );
+      const addMemberForm = document.getElementById("add-member-form");
+      const ownerTransactionList = document.getElementById(
+        "owner-transaction-list"
+      );
+      const familyMembersContainer = document.getElementById(
+        "family-members-container"
+      );
+      const ownerTransactionMemberSelect = document.getElementById(
+        "owner-transaction-member"
+      );
+      const totalIncomeElement = document.getElementById("total-income");
+      const totalExpensesElement = document.getElementById("total-expenses");
+      const balanceElement = document.getElementById("balance");
+      const generateReportBtn = document.getElementById("generate-report-btn");
+      const reportSection = document.getElementById("report-section");
+      const reportPeriod = document.getElementById("report-period");
+      const customDateRange = document.getElementById("custom-date-range");
+      const customDateRangeEnd = document.getElementById(
+        "custom-date-range-end"
+      );
+      const generateReport = document.getElementById("generate-report");
+      const exportPdf = document.getElementById("export-pdf");
+      const exportCsv = document.getElementById("export-csv");
+      const reportTotalIncome = document.getElementById("report-total-income");
+      const reportTotalExpenses = document.getElementById(
+        "report-total-expenses"
+      );
+      const reportNetBalance = document.getElementById("report-net-balance");
+      const reportIncomePeriod = document.getElementById(
+        "report-income-period"
+      );
+      const reportExpensesPeriod = document.getElementById(
+        "report-expenses-period"
+      );
+      const reportBalancePeriod = document.getElementById(
+        "report-balance-period"
+      );
+      const reportTransactionsTable = document.getElementById(
+        "report-transactions-table"
+      );
+      const reportType = document.getElementById("report-type");
+
+      // Modal elements
+      const deleteModal = document.getElementById("delete-modal");
+      const deleteModalMessage = document.getElementById(
+        "delete-modal-message"
+      );
+      const closeModal = document.querySelector(".close");
+      const cancelDelete = document.getElementById("cancel-delete");
+      const confirmDelete = document.getElementById("confirm-delete");
+
+      // Data storage
+      let familyMembers = [
+        {
+          id: 1,
+          name: "John Doe",
+          role: "owner",
+          email: "john@example.com",
+          budget: 50000,
+          spent: 42500,
+          avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+          transactions: [
+            {
+              id: 1,
+              description: "Supermarket",
+              date: "Jan 18",
+              amount: -8500,
+              type: "expense",
+            },
+            {
+              id: 2,
+              description: "Salary",
+              date: "Jan 15",
+              amount: 85000,
+              type: "income",
+            },
+          ],
+        },
+        {
+          id: 2,
+          name: "Sarah Doe",
+          role: "member",
+          email: "sarah@example.com",
+          budget: 25000,
+          spent: 18500,
+          avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+          transactions: [
+            {
+              id: 3,
+              description: "Movie Tickets",
+              date: "Jan 15",
+              amount: -2500,
+              type: "expense",
+            },
+            {
+              id: 4,
+              description: "Freelance Work",
+              date: "Jan 10",
+              amount: 15000,
+              type: "income",
+            },
+          ],
+        },
+        {
+          id: 3,
+          name: "Michael Doe",
+          role: "member",
+          email: "michael@example.com",
+          budget: 15000,
+          spent: 12800,
+          avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+          transactions: [
+            {
+              id: 5,
+              description: "School Fees",
+              date: "Jan 10",
+              amount: -15000,
+              type: "expense",
+            },
+            {
+              id: 6,
+              description: "Books",
+              date: "Jan 8",
+              amount: -3500,
+              type: "expense",
+            },
+          ],
+        },
+      ];
+
+      let allTransactions = [
+        {
+          id: 1,
+          description: "Supermarket Shopping",
+          category: "Food & Groceries",
+          member: "John",
+          date: "Jan 18, 2025",
+          amount: -8500,
+          type: "expense",
+        },
+        {
+          id: 2,
+          description: "Salary Deposit",
+          category: "Salary",
+          member: "John",
+          date: "Jan 15, 2025",
+          amount: 85000,
+          type: "income",
+        },
+        {
+          id: 3,
+          description: "Electricity Bill",
+          category: "Utilities",
+          member: "All",
+          date: "Jan 12, 2025",
+          amount: -12500,
+          type: "expense",
+        },
+        {
+          id: 4,
+          description: "School Fees",
+          category: "Education",
+          member: "Michael",
+          date: "Jan 10, 2025",
+          amount: -15000,
+          type: "expense",
+        },
+        {
+          id: 5,
+          description: "Movie Tickets",
+          category: "Entertainment",
+          member: "Sarah",
+          date: "Jan 15, 2025",
+          amount: -2500,
+          type: "expense",
+        },
+        {
+          id: 6,
+          description: "Freelance Work",
+          category: "Business Income",
+          member: "Sarah",
+          date: "Jan 10, 2025",
+          amount: 15000,
+          type: "income",
+        },
+      ];
+
+      // Variables to track what we're deleting
+      let currentDeleteType = null; // 'transaction' or 'member'
+      let currentDeleteId = null;
+      let currentDeleteIndex = null;
+
+      // Chart instances
+      let reportExpenseChart = null;
+      let reportComparisonChart = null;
+
+      // Global variables to track totals
+      let totalIncome = 100000;
+      let totalExpenses = 75000;
+      let balance = 25000;
+
+      // Notification system
+      function showNotification(message, type = "info") {
+        const notificationContainer = document.getElementById(
+          "notification-container"
+        );
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+                <div>${message}</div>
+                <div class="close-notification">&times;</div>
+            `;
+
+        notificationContainer.appendChild(notification);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
+
+        // Close on click
+        notification
+          .querySelector(".close-notification")
+          .addEventListener("click", () => {
+            notification.remove();
+          });
+      }
+
+      // Format currency in Sri Lankan Rupees
+      function formatCurrency(amount) {
+        return (
+          "Rs " +
+          parseFloat(amount).toLocaleString("en-LK", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+
+      // Parse currency string to number
+      function parseCurrency(currencyString) {
+        return parseFloat(currencyString.replace(/[^\d.-]/g, ""));
+      }
+
+      // Update summary display
+      function updateSummaryDisplay() {
+        totalIncomeElement.textContent = formatCurrency(totalIncome);
+        totalExpensesElement.textContent = formatCurrency(totalExpenses);
+        balanceElement.textContent = formatCurrency(balance);
+      }
+
+      // Render family members with their recent transactions
+      function renderFamilyMembers() {
+        familyMembersContainer.innerHTML = "";
+
+        familyMembers.forEach((member, index) => {
+          const memberCard = document.createElement("div");
+          memberCard.className = "member-card";
+
+          memberCard.innerHTML = `
+                    <button class="remove-member-btn" data-member-id="${
+                      member.id
+                    }" data-member-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <img src="${member.avatar}" alt="${
+            member.name
+          }" class="member-avatar">
+                    <h3 class="member-name">${member.name}</h3>
+                    <span class="member-role role-${member.role}">${
+            member.role === "owner" ? "Owner" : "Member"
+          }</span>
+                    <div class="member-details">
+                        <div class="member-detail">
+                            <span>Monthly Budget:</span>
+                            <span>${formatCurrency(member.budget)}</span>
+                        </div>
+                        <div class="member-detail">
+                            <span>Spent This Month:</span>
+                            <span>${formatCurrency(member.spent)}</span>
+                        </div>
+                    </div>
+                    <div class="member-transactions">
+                        <h4>Recent Transactions</h4>
+                        ${member.transactions
+                          .slice(0, 2)
+                          .map(
+                            (transaction) => `
+                            <div class="transaction-item">
+                                <div>${transaction.description}</div>
+                                <div>${transaction.date}</div>
+                                <div class="${
+                                  transaction.type === "income"
+                                    ? "income"
+                                    : "expense"
+                                }">
+                                    ${
+                                      transaction.type === "income" ? "+" : "-"
+                                    } ${formatCurrency(
+                              Math.abs(transaction.amount)
+                            )}
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                        <button class="btn btn-sm btn-block" style="margin-top: 10px;" data-member="${
+                          member.id
+                        }">
+                            View All Transactions
+                        </button>
+                    </div>
+                `;
+
+          familyMembersContainer.appendChild(memberCard);
+        });
+
+        // Add event listeners to view all transactions buttons
+        document.querySelectorAll("[data-member]").forEach((button) => {
+          button.addEventListener("click", function () {
+            const memberId = this.getAttribute("data-member");
+            viewMemberTransactions(memberId);
+          });
+        });
+
+        // Add event listeners to remove member buttons
+        document.querySelectorAll(".remove-member-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            const memberId = parseInt(this.getAttribute("data-member-id"));
+            const memberIndex = parseInt(
+              this.getAttribute("data-member-index")
+            );
+            showDeleteMemberModal(memberId, memberIndex);
+          });
+        });
+      }
+
+      // Show delete member confirmation modal
+      function showDeleteMemberModal(memberId, memberIndex) {
+        const member = familyMembers[memberIndex];
+        deleteModalMessage.textContent = `Are you sure you want to remove ${member.name} from your family?`;
+        currentDeleteType = "member";
+        currentDeleteId = memberId;
+        currentDeleteIndex = memberIndex;
+        deleteModal.style.display = "flex";
+      }
+
+      // Show delete transaction confirmation modal
+      function showDeleteTransactionModal(transactionId, transactionIndex) {
+        const transaction = allTransactions[transactionIndex];
+        deleteModalMessage.textContent = `Are you sure you want to delete the transaction "${transaction.description}"?`;
+        currentDeleteType = "transaction";
+        currentDeleteId = transactionId;
+        currentDeleteIndex = transactionIndex;
+        deleteModal.style.display = "flex";
+      }
+
+      // Delete a transaction
+      function deleteTransaction(transactionId, transactionIndex) {
+        // Remove from allTransactions
+        const deletedTransaction = allTransactions.splice(
+          transactionIndex,
+          1
+        )[0];
+
+        // Update totals
+        if (deletedTransaction.type === "income") {
+          totalIncome -= Math.abs(deletedTransaction.amount);
+        } else {
+          totalExpenses -= Math.abs(deletedTransaction.amount);
+        }
+        balance = totalIncome - totalExpenses;
+        updateSummaryDisplay();
+
+        // Remove from the specific member's transactions if applicable
+        if (deletedTransaction.member !== "All") {
+          const member = familyMembers.find(
+            (m) => m.name === deletedTransaction.member
+          );
+          if (member) {
+            const memberTransactionIndex = member.transactions.findIndex(
+              (t) => t.id === transactionId
+            );
+            if (memberTransactionIndex !== -1) {
+              member.transactions.splice(memberTransactionIndex, 1);
+
+              // Update member's spent amount if it was an expense
+              if (deletedTransaction.type === "expense") {
+                member.spent -= Math.abs(deletedTransaction.amount);
+              }
+            }
+          }
+        }
+
+        // Update the displays
+        renderTransactions();
+        renderFamilyMembers();
+
+        showNotification("Transaction deleted successfully!", "success");
+      }
+
+      // Delete a family member
+      function deleteFamilyMember(memberId, memberIndex) {
+        // Remove from familyMembers
+        const deletedMember = familyMembers.splice(memberIndex, 1)[0];
+
+        // Remove all transactions associated with this member
+        allTransactions = allTransactions.filter(
+          (t) => t.member !== deletedMember.name
+        );
+
+        // Update the displays
+        renderFamilyMembers();
+
+        // Update transaction member select dropdown
+        ownerTransactionMemberSelect.innerHTML =
+          '<option value="all">All Family</option>';
+        familyMembers.forEach((member) => {
+          const option = document.createElement("option");
+          option.value = member.name.toLowerCase().replace(/\s/g, "-");
+          option.textContent = member.name;
+          ownerTransactionMemberSelect.appendChild(option);
+        });
+
+        showNotification("Family member removed successfully!", "success");
+      }
+
+      // Render transactions in the transaction list
+      function renderTransactions() {
+        ownerTransactionList.innerHTML = "";
+
+        allTransactions.forEach((transaction, index) => {
+          const transactionItem = document.createElement("div");
+          transactionItem.className = "transaction-item";
+          transactionItem.setAttribute("data-transaction-id", transaction.id);
+
+          transactionItem.innerHTML = `
+                    <div>${transaction.description}</div>
+                    <div>${transaction.category}</div>
+                    <div>${transaction.member}</div>
+                    <div>${transaction.date}</div>
+                    <div class="${
+                      transaction.type === "income" ? "income" : "expense"
+                    }">
+                        ${
+                          transaction.type === "income" ? "+" : "-"
+                        } ${formatCurrency(Math.abs(transaction.amount))}
+                    </div>
+                    <div>
+                        <button class="btn btn-danger btn-sm delete-transaction" data-transaction-id="${
+                          transaction.id
+                        }" data-transaction-index="${index}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+
+          ownerTransactionList.appendChild(transactionItem);
+        });
+
+        // Add event listeners to delete buttons
+        document.querySelectorAll(".delete-transaction").forEach((button) => {
+          button.addEventListener("click", function () {
+            const transactionId = parseInt(
+              this.getAttribute("data-transaction-id")
+            );
+            const transactionIndex = parseInt(
+              this.getAttribute("data-transaction-index")
+            );
+            showDeleteTransactionModal(transactionId, transactionIndex);
+          });
+        });
+      }
+
+      // View all transactions for a specific member
+      function viewMemberTransactions(memberId) {
+        const member = familyMembers.find((m) => m.id == memberId);
+        if (!member) return;
+
+        // Create a modal or navigate to a transactions page
+        // For simplicity, we'll just show an alert with the transactions
+        const transactionsList = member.transactions
+          .map(
+            (t) =>
+              `${t.description} - ${t.date} - ${
+                t.type === "income" ? "+" : "-"
+              } ${formatCurrency(Math.abs(t.amount))}`
+          )
+          .join("\n");
+
+        alert(`All transactions for ${member.name}:\n\n${transactionsList}`);
+      }
+
+      // Update summary for owner dashboard
+      function updateSummary(type, amount) {
+        if (type === "income") {
+          totalIncome += parseFloat(amount);
+        } else {
+          totalExpenses += parseFloat(amount);
+        }
+
+        balance = totalIncome - totalExpenses;
+        updateSummaryDisplay();
+      }
+
+      // Filter transactions based on report criteria
+      function filterTransactionsForReport() {
+        const period = reportPeriod.value;
+        const today = new Date();
+        let startDate, endDate;
+
+        // Set date range based on selected period
+        switch (period) {
+          case "this_month":
+            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            break;
+          case "last_month":
+            startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+            break;
+          case "last_3_months":
+            startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            break;
+          case "this_year":
+            startDate = new Date(today.getFullYear(), 0, 1);
+            endDate = new Date(today.getFullYear(), 11, 31);
+            break;
+          case "custom":
+            startDate = new Date(document.getElementById("start-date").value);
+            endDate = new Date(document.getElementById("end-date").value);
+            break;
+          default:
+            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        }
+
+        // Filter transactions by date
+        return allTransactions.filter((transaction) => {
+          const transactionDate = new Date(transaction.date);
+          return transactionDate >= startDate && transactionDate <= endDate;
+        });
+      }
+
+      // Generate financial report
+      function generateFinancialReport() {
+        const filteredTransactions = filterTransactionsForReport();
+        const reportTypeValue = reportType.value;
+
+        // Calculate totals
+        const totalIncome = filteredTransactions
+          .filter((t) => t.type === "income")
+          .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+        const totalExpenses = filteredTransactions
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+        const netBalance = totalIncome - totalExpenses;
+
+        // Update report summary
+        reportTotalIncome.textContent = formatCurrency(totalIncome);
+        reportTotalExpenses.textContent = formatCurrency(totalExpenses);
+        reportNetBalance.textContent = formatCurrency(netBalance);
+
+        // Update period labels
+        const periodLabel =
+          reportPeriod.options[reportPeriod.selectedIndex].text;
+        reportIncomePeriod.textContent = periodLabel;
+        reportExpensesPeriod.textContent = periodLabel;
+        reportBalancePeriod.textContent = periodLabel;
+
+        // Generate charts
+        generateReportCharts(filteredTransactions);
+
+        // Generate detailed transactions table if needed
+        if (reportTypeValue === "detailed") {
+          generateReportTable(filteredTransactions);
+        } else {
+          reportTransactionsTable.innerHTML =
+            '<tr><td colspan="6">Select "Detailed Transactions" report type to view transaction details.</td></tr>';
+        }
+
+        showNotification("Report generated successfully!", "success");
+      }
+
+      // Generate report charts
+      function generateReportCharts(transactions) {
+        const ctx1 = document
+          .getElementById("reportExpenseChart")
+          .getContext("2d");
+        const ctx2 = document
+          .getElementById("reportComparisonChart")
+          .getContext("2d");
+
+        // Destroy existing charts if they exist
+        if (reportExpenseChart) {
+          reportExpenseChart.destroy();
+        }
+        if (reportComparisonChart) {
+          reportComparisonChart.destroy();
+        }
+
+        // Calculate expense distribution by category
+        const expenseCategories = {};
+        transactions
+          .filter((t) => t.type === "expense")
+          .forEach((t) => {
+            if (expenseCategories[t.category]) {
+              expenseCategories[t.category] += Math.abs(t.amount);
+            } else {
+              expenseCategories[t.category] = Math.abs(t.amount);
+            }
+          });
+
+        // Create expense distribution chart
+        reportExpenseChart = new Chart(ctx1, {
+          type: "pie",
+          data: {
+            labels: Object.keys(expenseCategories),
+            datasets: [
+              {
+                data: Object.values(expenseCategories),
+                backgroundColor: [
+                  "rgba(67, 97, 238, 0.7)",
+                  "rgba(58, 12, 163, 0.7)",
+                  "rgba(76, 201, 240, 0.7)",
+                  "rgba(247, 37, 133, 0.7)",
+                  "rgba(252, 163, 17, 0.7)",
+                  "rgba(46, 196, 182, 0.7)",
+                  "rgba(114, 9, 183, 0.7)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+              title: {
+                display: true,
+                text: "Expense Distribution (LKR)",
+              },
+            },
+          },
+        });
+
+        // Calculate monthly income vs expenses for comparison chart
+        const monthlyData = {};
+        transactions.forEach((t) => {
+          const date = new Date(t.date);
+          const monthYear = `${date.toLocaleString("default", {
+            month: "short",
+          })} ${date.getFullYear()}`;
+
+          if (!monthlyData[monthYear]) {
+            monthlyData[monthYear] = { income: 0, expenses: 0 };
+          }
+
+          if (t.type === "income") {
+            monthlyData[monthYear].income += Math.abs(t.amount);
+          } else {
+            monthlyData[monthYear].expenses += Math.abs(t.amount);
+          }
+        });
+
+        // Sort months chronologically
+        const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
+          const [monthA, yearA] = a.split(" ");
+          const [monthB, yearB] = b.split(" ");
+          const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+
+          if (yearA !== yearB) return parseInt(yearA) - parseInt(yearB);
+          return months.indexOf(monthA) - months.indexOf(monthB);
+        });
+
+        // Create comparison chart
+        reportComparisonChart = new Chart(ctx2, {
+          type: "bar",
+          data: {
+            labels: sortedMonths,
+            datasets: [
+              {
+                label: "Income",
+                data: sortedMonths.map((month) => monthlyData[month].income),
+                backgroundColor: "rgba(16, 185, 129, 0.7)",
+                borderColor: "rgba(16, 185, 129, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Expenses",
+                data: sortedMonths.map((month) => monthlyData[month].expenses),
+                backgroundColor: "rgba(239, 68, 68, 0.7)",
+                borderColor: "rgba(239, 68, 68, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Amount (LKR)",
+                },
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: "Month",
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              title: {
+                display: true,
+                text: "Monthly Income vs Expenses",
+              },
+            },
+          },
+        });
+      }
+
+      // Generate report table
+      function generateReportTable(transactions) {
+        reportTransactionsTable.innerHTML = "";
+
+        if (transactions.length === 0) {
+          reportTransactionsTable.innerHTML =
+            '<tr><td colspan="6">No transactions found for the selected period.</td></tr>';
+          return;
+        }
+
+        transactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${transaction.date}</td>
+                    <td>${transaction.description}</td>
+                    <td>${transaction.category}</td>
+                    <td>${transaction.member}</td>
+                    <td>${
+                      transaction.type.charAt(0).toUpperCase() +
+                      transaction.type.slice(1)
+                    }</td>
+                    <td class="${
+                      transaction.type === "income" ? "income" : "expense"
+                    }">
+                        ${
+                          transaction.type === "income" ? "+" : "-"
+                        } ${formatCurrency(Math.abs(transaction.amount))}
+                    </td>
+                `;
+          reportTransactionsTable.appendChild(row);
+        });
+      }
+
+      // Export report as PDF (simulated)
+      function exportReportAsPdf() {
+        showNotification(
+          "PDF export feature would generate a downloadable report in a real application.",
+          "info"
+        );
+        // In a real application, this would use a library like jsPDF
+        // to generate a PDF document with the report data
+      }
+
+      // Export report as CSV
+      function exportReportAsCsv() {
+        const filteredTransactions = filterTransactionsForReport();
+        let csvContent = "Date,Description,Category,Member,Type,Amount\n";
+
+        filteredTransactions.forEach((transaction) => {
+          csvContent += `"${transaction.date}","${transaction.description}","${transaction.category}","${transaction.member}","${transaction.type}","${transaction.amount}"\n`;
+        });
+
+        const encodedUri = encodeURI(
+          "data:text/csv;charset=utf-8," + csvContent
+        );
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "family_budget_report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showNotification("Report exported as CSV successfully!", "success");
+      }
+
+      // Owner Transaction Form Submission
+      ownerTransactionForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const amount = parseFloat(
+          document.getElementById("owner-transaction-amount").value
+        );
+        const type = document.getElementById("owner-transaction-type").value;
+        const description = document.getElementById(
+          "owner-transaction-description"
+        ).value;
+        const category = document.getElementById(
+          "owner-transaction-category"
+        ).value;
+        const date = document.getElementById("owner-transaction-date").value;
+        const member = document.getElementById(
+          "owner-transaction-member"
+        ).value;
+
+        // Format date for display
+        const formattedDate = new Date(date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+
+        // Create transaction object
+        const transaction = {
+          id: allTransactions.length + 1,
+          description: description,
+          category: category,
+          member:
+            member === "all"
+              ? "All"
+              : document.getElementById("owner-transaction-member")
+                  .selectedOptions[0].text,
+          date: formattedDate,
+          amount: type === "income" ? amount : -amount,
+          type: type,
+        };
+
+        // Add to all transactions
+        allTransactions.unshift(transaction);
+
+        // Add to specific member's transactions if not "All"
+        if (member !== "all") {
+          const memberName = document.getElementById("owner-transaction-member")
+            .selectedOptions[0].text;
+          const memberObj = familyMembers.find((m) => m.name === memberName);
+          if (memberObj) {
+            memberObj.transactions.unshift({
+              id: transaction.id,
+              description: description,
+              date: new Date(date).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              }),
+              amount: type === "income" ? amount : -amount,
+              type: type,
+            });
+
+            // Update member's spent amount if expense
+            if (type === "expense") {
+              memberObj.spent += amount;
+            }
+          }
+        }
+
+        // Update the displays
+        renderTransactions();
+        renderFamilyMembers();
+        updateSummary(type, amount);
+
+        showNotification(`Transaction added successfully!`, "success");
+        this.reset();
+
+        // Set date to today
+        document.getElementById("owner-transaction-date").value = new Date()
+          .toISOString()
+          .split("T")[0];
+      });
+
+      // Add Member Form Submission
+      addMemberForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const memberName = document.getElementById("new-member-name").value;
+        const memberEmail = document.getElementById("new-member-email").value;
+        const memberRole = document.getElementById("new-member-role").value;
+        const memberBudget = document.getElementById("new-member-budget").value;
+
+        // Create new member object
+        const newMember = {
+          id: familyMembers.length + 1,
+          name: memberName,
+          role: memberRole,
+          email: memberEmail,
+          budget: parseFloat(memberBudget),
+          spent: 0,
+          avatar: `https://randomuser.me/api/portraits/${
+            memberRole === "owner" ? "men" : "women"
+          }/${Math.floor(Math.random() * 50)}.jpg`,
+          transactions: [],
+        };
+
+        // Add to family members array
+        familyMembers.push(newMember);
+
+        // Update the family members display
+        renderFamilyMembers();
+
+        // Add to transaction member select
+        const option = document.createElement("option");
+        option.value = newMember.name.toLowerCase().replace(/\s/g, "-");
+        option.textContent = newMember.name;
+        ownerTransactionMemberSelect.appendChild(option);
+
+        showNotification(
+          `Family member "${memberName}" added successfully!`,
+          "success"
+        );
+        this.reset();
+      });
+
+      // Logout Functionality
+      logoutBtnOwner.addEventListener("click", function () {
+        window.location.href = "index.html";
+      });
+
+      // Initialize Owner Chart
+      function initOwnerChart() {
+        const ctx = document.getElementById("ownerChart").getContext("2d");
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: [
+              "Food & Groceries",
+              "Utilities",
+              "Rent",
+              "Transportation",
+              "Healthcare",
+              "Education",
+              "Entertainment",
+            ],
+            datasets: [
+              {
+                data: [35, 20, 25, 10, 5, 3, 2],
+                backgroundColor: [
+                  "rgba(67, 97, 238, 0.7)",
+                  "rgba(58, 12, 163, 0.7)",
+                  "rgba(76, 201, 240, 0.7)",
+                  "rgba(247, 37, 133, 0.7)",
+                  "rgba(252, 163, 17, 0.7)",
+                  "rgba(46, 196, 182, 0.7)",
+                  "rgba(114, 9, 183, 0.7)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+              title: {
+                display: true,
+                text: "Expense Breakdown (LKR)",
+              },
+            },
+          },
+        });
+      }
+
+      // Initialize the dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set default date to today (2025)
+        const today = new Date();
+        today.setFullYear(2025); // Set year to 2025
+        const todayFormatted = today.toISOString().split("T")[0];
+
+        document.getElementById("owner-transaction-date").value =
+          todayFormatted;
+
+        // Populate transaction member select
+        familyMembers.forEach((member) => {
+          const option = document.createElement("option");
+          option.value = member.name.toLowerCase().replace(/\s/g, "-");
+          option.textContent = member.name;
+          ownerTransactionMemberSelect.appendChild(option);
+        });
+
+        // Initialize the chart
+        initOwnerChart();
+
+        // Render initial data
+        renderFamilyMembers();
+        renderTransactions();
+
+        // Modal event listeners
+        closeModal.addEventListener("click", function () {
+          deleteModal.style.display = "none";
+        });
+
+        cancelDelete.addEventListener("click", function () {
+          deleteModal.style.display = "none";
+        });
+
+        confirmDelete.addEventListener("click", function () {
+          if (currentDeleteType === "transaction") {
+            deleteTransaction(currentDeleteId, currentDeleteIndex);
+          } else if (currentDeleteType === "member") {
+            deleteFamilyMember(currentDeleteId, currentDeleteIndex);
+          }
+          deleteModal.style.display = "none";
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener("click", function (event) {
+          if (event.target === deleteModal) {
+            deleteModal.style.display = "none";
+          }
+        });
+
+        // Report generation button
+        generateReportBtn.addEventListener("click", function () {
+          reportSection.style.display =
+            reportSection.style.display === "none" ? "block" : "none";
+          if (reportSection.style.display === "block") {
+            generateFinancialReport();
+          }
+        });
+
+        // Report period change handler
+        reportPeriod.addEventListener("change", function () {
+          if (this.value === "custom") {
+            customDateRange.style.display = "block";
+            customDateRangeEnd.style.display = "block";
+          } else {
+            customDateRange.style.display = "none";
+            customDateRangeEnd.style.display = "none";
+          }
+        });
+
+        // Generate report button
+        generateReport.addEventListener("click", generateFinancialReport);
+
+        // Export buttons
+        exportPdf.addEventListener("click", exportReportAsPdf);
+        exportCsv.addEventListener("click", exportReportAsCsv);
+      });
+    </script>
+  </body>
+</html>
